@@ -1,5 +1,3 @@
-import streamlit as st
-
 from storage import (
     cadastrar_usuario,
     fazer_login,
@@ -10,293 +8,140 @@ from storage import (
 from quiz import iniciar_rodada
 
 
-st.set_page_config(
-    page_title="Quiz",
-    page_icon="🎯"
-)
-
-
-# ==============================
-# CONFIGURAÇÃO INICIAL
-# ==============================
-
-if "usuario_logado" not in st.session_state:
-    st.session_state.usuario_logado = None
-
-if "quiz_iniciado" not in st.session_state:
-    st.session_state.quiz_iniciado = False
-
-if "resultado_salvo" not in st.session_state:
-    st.session_state.resultado_salvo = False
-
-
-# ==============================
-# MENU PRINCIPAL
-# ==============================
-
 def menu_principal():
 
-    st.title("🎯 QUIZ")
+    print("\n===== QUIZ =====")
+    print("1 - Cadastrar")
+    print("2 - Login")
+    print("3 - Sair")
 
-    opcao = st.radio(
-        "Escolha uma opção:",
-        ["Cadastrar", "Login", "Sair"]
-    )
+    opcao = input("Escolha uma opção: ").strip()
 
-    if opcao == "Cadastrar":
+    return opcao
 
-        st.subheader("📝 Cadastro")
-
-        nome = st.text_input("Digite seu nome:")
-        senha = st.text_input(
-            "Digite sua senha:",
-            type="password"
-        )
-
-        if st.button("Cadastrar"):
-
-            if nome and senha:
-
-                mensagem = cadastrar_usuario(
-                    nome.strip(),
-                    senha.strip()
-                )
-
-                st.success(mensagem)
-
-            else:
-
-                st.warning(
-                    "Preencha todos os campos."
-                )
-
-    elif opcao == "Login":
-
-        st.subheader("🔐 Login")
-
-        nome = st.text_input("Digite seu nome:")
-        senha = st.text_input(
-            "Digite sua senha:",
-            type="password"
-        )
-
-        if st.button("Entrar"):
-
-            if nome and senha:
-
-                usuario = fazer_login(
-                    nome.strip(),
-                    senha.strip()
-                )
-
-                if usuario:
-
-                    st.session_state.usuario_logado = usuario
-
-                    st.rerun()
-
-                else:
-
-                    st.error(
-                        "Nome ou senha incorretos."
-                    )
-
-            else:
-
-                st.warning(
-                    "Preencha todos os campos."
-                )
-
-    elif opcao == "Sair":
-
-        st.info("Programa encerrado.")
-
-
-# ==============================
-# MENU DO USUÁRIO
-# ==============================
 
 def menu_usuario(usuario):
 
-    st.title("🎯 QUIZ")
+    print("\n===== MENU DO USUÁRIO =====")
+    print("1 - Jogar")
+    print("2 - Ranking")
+    print("3 - Logout")
 
-    st.write(
-        f"Bem-vindo(a), **{usuario}**! 👋"
-    )
+    opcao = input("Escolha uma opção: ").strip()
 
-    opcao = st.radio(
-        "Escolha uma opção:",
-        ["Jogar", "Ranking", "Logout"]
-    )
+    if opcao == "1":
+        return "jogar"
 
-    # ==============================
-    # JOGAR
-    # ==============================
-
-    if opcao == "Jogar":
-
-        st.subheader("🎮 Jogar")
-
-        # ------------------------------
-        # BOTÃO INICIAR
-        # ------------------------------
-
-        if not st.session_state.quiz_iniciado:
-
-            st.write(
-                "Você terá 8 perguntas."
-            )
-
-            if st.button("▶️ Iniciar rodada"):
-
-                st.session_state.quiz_iniciado = True
-                st.session_state.resultado_salvo = False
-
-                # Limpa informações de uma rodada anterior
-                st.session_state.pop(
-                    "rodada",
-                    None
-                )
-
-                st.session_state.pop(
-                    "numero_pergunta",
-                    None
-                )
-
-                st.session_state.pop(
-                    "pontuacao",
-                    None
-                )
-
-                st.session_state.pop(
-                    "quiz_finalizado",
-                    None
-                )
-
-                st.rerun()
-
-        # ------------------------------
-        # QUIZ
-        # ------------------------------
-
-        else:
-
-            pontuacao = iniciar_rodada()
-
-            # ------------------------------
-            # FIM DO QUIZ
-            # ------------------------------
-
-            if pontuacao is not None:
-
-                if not st.session_state.resultado_salvo:
-
-                    salvar_resultado(
-                        usuario,
-                        pontuacao
-                    )
-
-                    st.session_state.resultado_salvo = True
-
-                st.success(
-                    f"🏆 Você fez {pontuacao}/8 pontos!"
-                )
-
-                if st.button(
-                    "🔄 Jogar novamente"
-                ):
-
-                    st.session_state.quiz_iniciado = False
-
-                    st.session_state.resultado_salvo = False
-
-                    st.session_state.pop(
-                        "rodada",
-                        None
-                    )
-
-                    st.session_state.pop(
-                        "numero_pergunta",
-                        None
-                    )
-
-                    st.session_state.pop(
-                        "pontuacao",
-                        None
-                    )
-
-                    st.session_state.pop(
-                        "quiz_finalizado",
-                        None
-                    )
-
-                    st.rerun()
-
-    # ==============================
-    # RANKING
-    # ==============================
-
-    elif opcao == "Ranking":
-
-        st.subheader("🏆 Ranking")
-
+    elif opcao == "2":
         mostrar_ranking()
+        return "continuar"
 
-    # ==============================
-    # LOGOUT
-    # ==============================
+    elif opcao == "3":
+        return "logout"
 
-    elif opcao == "Logout":
+    else:
+        print("Opção inválida.")
+        return "continuar"
 
-        st.session_state.usuario_logado = None
-
-        st.session_state.quiz_iniciado = False
-
-        st.session_state.resultado_salvo = False
-
-        st.session_state.pop(
-            "rodada",
-            None
-        )
-
-        st.session_state.pop(
-            "numero_pergunta",
-            None
-        )
-
-        st.session_state.pop(
-            "pontuacao",
-            None
-        )
-
-        st.session_state.pop(
-            "quiz_finalizado",
-            None
-        )
-
-        st.rerun()
-
-
-# ==============================
-# SISTEMA
-# ==============================
 
 def sistema():
 
-    if st.session_state.usuario_logado is None:
+    usuario_logado = None
 
-        menu_principal()
+    while True:
 
-    else:
+        # =========================
+        # USUÁRIO NÃO ESTÁ LOGADO
+        # =========================
 
-        menu_usuario(
-            st.session_state.usuario_logado
-        )
+        if usuario_logado is None:
 
+            opcao = menu_principal()
 
-# ==============================
-# EXECUTAR
-# ==============================
+            if opcao == "1":
+
+                nome = input("Digite seu nome: ").strip()
+                senha = input("Digite sua senha: ").strip()
+
+                mensagem = cadastrar_usuario(nome, senha)
+
+                print(mensagem)
+
+            elif opcao == "2":
+
+                nome = input("Digite seu nome: ").strip()
+                senha = input("Digite sua senha: ").strip()
+
+                usuario_logado = fazer_login(nome, senha)
+
+                if usuario_logado:
+                    print(
+                        f"\nBem-vindo(a), {usuario_logado}!"
+                    )
+
+            elif opcao == "3":
+
+                print("Programa encerrado.")
+                break
+
+            else:
+
+                print("Opção inválida.")
+
+        # =========================
+        # USUÁRIO ESTÁ LOGADO
+        # =========================
+
+        else:
+
+            acao = menu_usuario(usuario_logado)
+
+            # -------------------------
+            # JOGAR
+            # -------------------------
+
+            if acao == "jogar":
+
+                jogar_novamente = True
+
+                while jogar_novamente:
+
+                    pontuacao = iniciar_rodada()
+
+                    salvar_resultado(
+                        usuario_logado,
+                        pontuacao
+                    )
+
+                    print(
+                        f"\nSua pontuação foi: "
+                        f"{pontuacao}/8"
+                    )
+
+                    resposta = input(
+                        "\nDeseja jogar novamente? "
+                        "(sim/nao): "
+                    ).strip().lower()
+
+                    if resposta == "sim":
+
+                        print("\nIniciando nova rodada...")
+
+                    else:
+
+                        jogar_novamente = False
+                        print("\nVoltando ao menu...")
+
+            # -------------------------
+            # LOGOUT
+            # -------------------------
+
+            elif acao == "logout":
+
+                usuario_logado = None
+
+                print("Logout realizado.")
+
 
 if __name__ == "__main__":
     sistema()
