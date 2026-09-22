@@ -1,9 +1,10 @@
 Quiz de Perguntas
+
 Integrantes da Equipe
-Izabela Rocha
-Isabela Silva
-Beatriz Rocha
-Clara Silva
+- Izabela Rocha
+- Isabela Silva
+- Beatriz Rocha
+- Clara Silva
 
 Sobre o Projeto
 O Quiz de Perguntas é um projeto desenvolvido em Python com o objetivo de criar uma experiência simples e interativa de perguntas e respostas.
